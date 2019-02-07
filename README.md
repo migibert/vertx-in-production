@@ -148,6 +148,7 @@ Then observe that calling the API returns the fallback value (an empty list).
 `> []`
 
 If you wait, you will see the breaker move to half opened state.
+
 Let's remove the latency to simulate a remote service recovery.
 
 `tc qdisc del dev eth0 root netem`
