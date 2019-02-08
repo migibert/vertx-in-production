@@ -1,5 +1,5 @@
 package co.teemo.blog;
 
 public enum EventBusChannels {
-  CONFIGURATION_CHANGED
+    CONFIGURATION_CHANGED
 }

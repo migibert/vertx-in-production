@@ -49,7 +49,7 @@ public class PokemonHandler implements Handler<RoutingContext> {
 
         this.healthChecks = HealthChecks.create(vertx);
         healthChecks.register("pokeApiHealthcheck", 1000, future -> {
-            if(circuitBreaker.state().equals(CircuitBreakerState.CLOSED)) {
+            if (circuitBreaker.state().equals(CircuitBreakerState.CLOSED)) {
                 future.complete(Status.OK());
             } else {
                 future.complete(Status.KO());
@@ -64,7 +64,7 @@ public class PokemonHandler implements Handler<RoutingContext> {
 
         Handler<Future<JsonArray>> processor = future -> {
             webClient.get(pokeApiPort, pokeApiHost, pokeApiPath).send(result -> {
-                if(result.succeeded()) {
+                if (result.succeeded()) {
                     future.complete(result.result().bodyAsJsonObject().getJsonArray("results"));
                 } else {
                     future.fail(result.cause());

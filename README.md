@@ -28,11 +28,34 @@ It answers "Pong from default" if configuration has been read from default.prope
 
 Then write a configuration file to override defaults and wait for the propagation (set to 5s in demo app)
 
-`echo "PING_RESPONSE=pong from environment file" >>  /etc/default/demo`
+```
+    echo "PING_RESPONSE=pong from environment file" >>  /etc/default/demo
+    curl http://localhost:8080/ping
+    > pong from environment file
+```
 
-`curl http://localhost:8080/ping`
+# Request Validations
 
-`> pong from environment file`
+## Ideas
+
+User input cannot bu trusted so they always need to be validated.
+
+## Rules
+
+The most basic validations are:
+* Required parameters are present
+* Parameters types are what we expect
+
+In addition, business rules can be applied to validate them (phone number validation, geolocstation restriction, user is active, ...).
+
+## Testing
+
+The /greetings/name route uses standard handler with business logic and failure handler but also an additional handler to validate requests.
+
+The validation handler checks that :
+* Authentication header is present
+* Version header is present and is an integer
+* name path parameter is present and a string
 
 # Design for failure
 
@@ -143,9 +166,10 @@ And call the API a few times to observe the circuit breaker opening
 
 Then observe that calling the API returns the fallback value (an empty list).
 
-`curl localhost:8080/pokemons`
-
-`> []`
+```
+    curl localhost:8080/pokemons
+    > []
+```
 
 If you wait, you will see the breaker move to half opened state.
 
@@ -246,6 +270,74 @@ Now you will see that calling the API again will close the circuit breaker and d
 
 ## Healthchecks
 
-Two endpoints are exposed to check application health:
+### Ideas
+
+Applications should always expose their health state through dedicated endpoints.
+
+It will let alerting & monitoring systems track if our application is alive or not and notify the team if necessary.
+
+### Rules
+
+Expose two endpoints for each application:
 * /alive to see if the process is running
 * /healthy to see if the application runs in optimal conditions or degraded mode
+
+### Testing
+
+Two endpoints are exposed to check application health:
+* /alive answers always OK
+* /healthy answers OK if all circuit breakers are closed, KO else
+
+## Logs
+
+### Ideas
+
+Logs are the most precise information we have on an error. It gives context, error cause, and everything we need to answer what happens.
+
+They have to contain the whole context, including a correlation id to be truly useful.
+
+### Rules
+
+Four rules to power up the logs:
+* Centralize them into one place
+* Use a format easy to export and to query like Json
+* Include metadata like host, zone, user, date, hour
+* Include correlation id
+
+### Testing
+
+TODO
+
+## Metrics
+
+### Ideas
+
+Metrics allow us to measure what is happening in our application and how it moves in time.
+
+### Rules
+
+Expose 4 levels of metrics:
+
+*System level*
+
+Things like CPU, RAM or Disk space. They are often reported by a system agent.
+
+*Middleware level*
+
+Things like JVM, Threads or Queues size. They are often reporter by the middleware or a framework.
+
+*Application level*
+
+Things like Connected users, errors breakdown. They are reported directly by the application using Metrics frameworks.
+
+*Business level*
+
+Things like spent money / user or connection frequency. They are reported by the application or by data analytics systems.
+
+### Testing
+
+Dropwizard Metrics is configured to report metrics to Console as an example. Exported metrics are:
+* Middleware metrics: verticles, event bus, servers, ..., find exhaustive list [here](https://vertx.io/docs/vertx-dropwizard-metrics/java/#_the_metrics)
+* Application metrics: number of validation errors
+
+A Dropwizard Reporter is configured to report metrics to log each minute. Take a look and observe their evolution!
