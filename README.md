@@ -46,7 +46,7 @@ The most basic validations are:
 * Required parameters are present
 * Parameters types are what we expect
 
-In addition, business rules can be applied to validate them (phone number validation, geolocstation restriction, user is active, ...).
+In addition, business rules can be applied to validate them (phone number validation, geolocation restriction...)
 
 ## Testing
 
@@ -55,7 +55,15 @@ The /greetings/name route uses standard handler with business logic and failure 
 The validation handler checks that :
 * Authentication header is present
 * Version header is present and is an integer
-* name path parameter is present and a string
+* name path parameter is present, begins with an uppercase character and is composed with alphabetical characters
+
+```
+    curl -i -H 'Authorization: toto' -H 'Version: 1'  http://localhost:8080/greetings/fds
+    > HTTP/1.1 400 Bad Request
+    > content-length: 38
+    > Name must start with an uppercase char
+```
+
 
 # Design for failure
 

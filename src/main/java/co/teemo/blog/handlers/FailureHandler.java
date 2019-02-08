@@ -4,6 +4,7 @@ import com.codahale.metrics.Counter;
 import com.codahale.metrics.SharedMetricRegistries;
 import io.vertx.core.Handler;
 import io.vertx.ext.web.RoutingContext;
+import io.vertx.ext.web.api.validation.ValidationException;
 
 public class FailureHandler implements Handler<RoutingContext> {
 
@@ -16,7 +17,12 @@ public class FailureHandler implements Handler<RoutingContext> {
     public void handle(RoutingContext context) {
         Throwable thrown = context.failure();
         recordError(thrown);
-        context.response().setStatusCode(500).end(thrown.getMessage());
+
+        if(thrown instanceof ValidationException) {
+            context.response().setStatusCode(400).end(thrown.getMessage());
+        } else {
+            context.response().setStatusCode(500).end(thrown.getMessage());
+        }
     }
 
     private void recordError(Throwable thrown) {

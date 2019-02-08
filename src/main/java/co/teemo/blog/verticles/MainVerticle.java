@@ -6,6 +6,7 @@ import co.teemo.blog.handlers.FailureHandler;
 import co.teemo.blog.handlers.GreetingHandler;
 import co.teemo.blog.handlers.PingHandler;
 import co.teemo.blog.handlers.PokemonHandler;
+import co.teemo.blog.security.NameValidator;
 import io.vertx.core.AbstractVerticle;
 import io.vertx.core.json.JsonObject;
 import io.vertx.core.logging.Logger;
@@ -42,7 +43,7 @@ public class MainVerticle extends AbstractVerticle {
                 .create()
                 .addHeaderParam("Authorization", ParameterType.GENERIC_STRING, true)
                 .addHeaderParam("Version", ParameterType.INT, true)
-                .addPathParam("name", ParameterType.GENERIC_STRING);
+                .addPathParamWithCustomTypeValidator("name", new NameValidator(), false);
 
         Router router = Router.router(vertx);
         router.route().consumes("application/json");
