@@ -311,23 +311,39 @@ Logs are the most precise information we have on an error. It gives context, err
 
 They have to contain the whole context, including a correlation id to be truly useful.
 
+For instance, on GCP you can use [this configuration](https://github.com/GoogleCloudPlatform/java-docs-samples/blob/master/logging/logback/src/main/resources/logback.xml)
+
 ### Rules
 
 Four rules to power up the logs:
 * Centralize them into one place
 * Use a format easy to export and to query like Json
-* Include metadata like host, zone, user, date, hour
-* Include correlation id
+* Include static runtime metadata like host, zone, application namen, version, ...
+* Include dynamic runtime metadata like correlation id, user id, session id, ...
 
 ### Testing
 
-TODO
+See that logs are output in Json format. To keep this repo easily testable we do not tread centralized logs here.
+
+Static Metadata are handled as MDC labels:
+* application name
+* version
+* release (canary or stable)
+* hostname
+
+Observe each logging message includes a metadata with your hostname.
 
 ## Metrics
 
 ### Ideas
 
 Metrics allow us to measure what is happening in our application and how it moves in time.
+
+They need to be tagged with static and dynamic metadata, just like logs.
+
+Static metadata let us see differences between environment, canary analysis, version regressions etc...
+
+Dynamic metadata let us break down a number (A/B testing, users per geographical zone, etc...)
 
 ### Rules
 
@@ -356,3 +372,11 @@ Dropwizard Metrics is configured to report metrics to Console as an example. Exp
 * Application metrics: number of validation errors
 
 A Dropwizard Reporter is configured to report metrics to log each minute. Take a look and observe their evolution!
+
+Also note that static metadata are added to any message (application name, version, release and host).
+
+Unfortunately, Dropwizard metrics in the current version does not support labels so we cannot add dynamic metadata to our metrics like correlation id etc...
+
+See [this thread](https://groups.google.com/forum/#!topic/vertx/9rHzX3vVg8Y) for more information/
+
+As a workaround, I added the dynamic metadata directly in log messages.

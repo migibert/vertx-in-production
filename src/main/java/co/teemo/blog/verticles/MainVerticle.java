@@ -17,6 +17,10 @@ import io.vertx.ext.web.Router;
 import io.vertx.ext.web.api.validation.HTTPRequestValidationHandler;
 import io.vertx.ext.web.api.validation.ParameterType;
 import io.vertx.ext.web.handler.BodyHandler;
+import org.slf4j.MDC;
+
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 
 
 public class MainVerticle extends AbstractVerticle {
@@ -30,6 +34,8 @@ public class MainVerticle extends AbstractVerticle {
 
     @Override
     public void start() {
+        configureLogging();
+
         this.pingHandler = new PingHandler();
         this.failureHandler = new FailureHandler();
         this.pokemonHandler = new PokemonHandler(vertx);
@@ -85,5 +91,17 @@ public class MainVerticle extends AbstractVerticle {
         int pokeApiPort = configuration.getInteger(ConfigurationKeys.POKE_API_PORT.name());
         String pokeApiPath = configuration.getString(ConfigurationKeys.POKE_API_PATH.name());
         pokemonHandler.setPokeApiUrl(pokeApiHost, pokeApiPort, pokeApiPath);
+    }
+
+    private static void configureLogging() {
+        // It's OK to use MDC with static values
+        MDC.put("application", "blog");
+        MDC.put("version", "1.0.0");
+        MDC.put("release", "canary");
+        try {
+            MDC.put("hostname", InetAddress.getLocalHost().getHostName());
+        } catch (UnknownHostException e) {
+            // Silent error, we can live without it
+        }
     }
 }

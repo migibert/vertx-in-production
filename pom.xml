@@ -10,6 +10,7 @@
 
     <properties>
         <vertx.version>3.6.3</vertx.version>
+        <logback.contrib.version>0.1.5</logback.contrib.version>
     </properties>
 
     <dependencies>
@@ -54,10 +55,25 @@
             <version>${vertx.version}</version>
         </dependency>
         <dependency>
+            <groupId>ch.qos.logback.contrib</groupId>
+            <artifactId>logback-jackson</artifactId>
+            <version>${logback.contrib.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>ch.qos.logback.contrib</groupId>
+            <artifactId>logback-json-classic</artifactId>
+            <version>${logback.contrib.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-databind</artifactId>
+            <version>2.9.5</version>
+        </dependency>
+
+        <dependency>
             <groupId>ch.qos.logback</groupId>
             <artifactId>logback-classic</artifactId>
             <version>1.2.3</version>
-            <scope>runtime</scope>
         </dependency>
     </dependencies>
 

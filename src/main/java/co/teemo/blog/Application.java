@@ -21,13 +21,15 @@ public class Application {
 
     public static void main(String[] args) {
 
+        System.setProperty("vertx.logger-delegate-factory-class-name", "io.vertx.core.logging.SLF4JLogDelegateFactory");
+
         // Initialize metric registry
         String registryName = "registry";
         MetricRegistry registry = SharedMetricRegistries.getOrCreate(registryName);
         SharedMetricRegistries.setDefault(registryName);
 
         Slf4jReporter reporter = Slf4jReporter.forRegistry(registry)
-                .outputTo(LoggerFactory.getLogger("co.teemo.blog"))
+                .outputTo(LoggerFactory.getLogger(Application.class))
                 .convertRatesTo(TimeUnit.SECONDS)
                 .convertDurationsTo(TimeUnit.MILLISECONDS)
                 .build();
@@ -56,9 +58,7 @@ public class Application {
         configRetriever.listen(
                 change -> {
                     JsonObject updatedConfiguration = change.getNewConfiguration();
-                    vertx
-                            .eventBus()
-                            .publish(EventBusChannels.CONFIGURATION_CHANGED.name(), updatedConfiguration);
+                    vertx.eventBus().publish(EventBusChannels.CONFIGURATION_CHANGED.name(), updatedConfiguration);
                 });
     }
 
@@ -83,7 +83,10 @@ public class Application {
             envVarKeys.add(key.name());
         }
         JsonObject envVarConfiguration = new JsonObject().put("keys", envVarKeys);
-        ConfigStoreOptions environment = new ConfigStoreOptions().setType("env").setConfig(envVarConfiguration).setOptional(true);
+        ConfigStoreOptions environment = new ConfigStoreOptions()
+                .setType("env")
+                .setConfig(envVarConfiguration)
+                .setOptional(true);
 
         return new ConfigRetrieverOptions()
                 .addStore(classpathFile) // local values : exhaustive list with sane defaults
