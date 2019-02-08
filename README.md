@@ -71,6 +71,9 @@ Implement a circuit breaker for each external dependency to fail faster and limi
 
 Call pokemon api : `curl localhost:8080/pokemons | jq`
 
+<details>
+<summary>Response</summary>
+
 ```
 [
   {
@@ -155,6 +158,7 @@ Call pokemon api : `curl localhost:8080/pokemons | jq`
   }
 ]
 ```
+</details>
 
 Simulate network latency using traffic control
 
@@ -181,6 +185,8 @@ Now you will see that calling the API again will close the circuit breaker and d
 
 `curl localhost:8080/pokemons | jq`
 
+<details>
+<summary>Response</summary>
 ```
 [
   {
@@ -265,6 +271,7 @@ Now you will see that calling the API again will close the circuit breaker and d
   }
 ]
 ```
+</details>
 
 # Observability
 
