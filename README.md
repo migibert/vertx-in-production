@@ -1,3 +1,5 @@
+This repository contains demo code to showcase principles written in https://blog.teemo.co/vertx-in-production-d5ca9e89d7c6 
+
 # Configuration
 
 ## Ideas
